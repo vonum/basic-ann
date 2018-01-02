@@ -1,6 +1,8 @@
 import numpy as np
 import scipy.special
 
+DEFAULT_N_EPOCHS = 20
+
 class NeuralNetwork:
   def __init__(self, inodes, hnodes, onodes, alpha):
     self.inodes = inodes
@@ -12,12 +14,13 @@ class NeuralNetwork:
 
     self.activation_function = lambda x: scipy.special.expit(x)
 
-  def train(self, inputs, targets):
+  def train(self, inputs, targets, epochs=DEFAULT_N_EPOCHS):
     X = np.array(inputs, ndmin=2)
     Y = np.array(targets, ndmin=2)
 
-    for i in range(len(X)):
-      self.__update_weights(X[i], Y[i])
+    for i in range(epochs):
+      for i in range(len(X)):
+        self.__update_weights(X[i], Y[i])
 
   def predict(self, inputs_list):
     # turn inputs from 1xn to nx1 dimensions
