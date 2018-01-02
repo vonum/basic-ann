@@ -8,15 +8,31 @@ class NeuralNetwork:
     self.onodes = onodes
     self.alpha = alpha
 
-    self.initialize_weights()
+    self.__initialize_weights()
 
     self.activation_function = lambda x: scipy.special.expit(x)
 
-  def initialize_weights(self):
+  def train(self, inputs, targets):
+    X = np.array(inputs, ndmin=2)
+    Y = np.array(targets, ndmin=2)
+
+    for i in range(len(X)):
+      self.__update_weights(X[i], Y[i])
+
+  def predict(self, inputs_list):
+    # turn inputs from 1xn to nx1 dimensions
+    inputs = np.array(inputs_list, ndmin=2).T
+
+    hidden_outputs = self.__calculate_outputs(self.wih, inputs)
+    final_outputs = self.__calculate_outputs(self.who, hidden_outputs)
+
+    return final_outputs
+
+  def __initialize_weights(self):
     self.wih = np.random.normal(0, pow(self.inodes, -0.5), (self.hnodes, self.inodes))
     self.who = np.random.normal(0, pow(self.hnodes, -0.5), (self.onodes, self.hnodes))
 
-  def train(self, inputs_list, targets_list):
+  def __update_weights(self, inputs_list, targets_list):
     # turn inputs and targets from 1xn to nx1 dimensions
     targets = np.array(targets_list, ndmin=2).T
     inputs = np.array(inputs_list, ndmin=2).T
@@ -31,15 +47,6 @@ class NeuralNetwork:
     self.who += self.alpha * np.dot((output_errors * final_outputs * (1.0 - final_outputs)), hidden_outputs.T)
     # update the weights for the links between the input and hidden layers
     self.wih += self.alpha * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), inputs.T)
-
-  def predict(self, inputs_list):
-    # turn inputs from 1xn to nx1 dimensions
-    inputs = np.array(inputs_list, ndmin=2).T
-
-    hidden_outputs = self.__calculate_outputs(self.wih, inputs)
-    final_outputs = self.__calculate_outputs(self.who, hidden_outputs)
-
-    return final_outputs
 
   def __calculate_outputs(self, weights, inputs):
     layer_inputs = np.dot(weights, inputs)
