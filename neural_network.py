@@ -31,6 +31,20 @@ class NeuralNetwork:
 
     return final_outputs
 
+  def test(self, inputs, targets):
+    X = np.array(inputs, ndmin=2)
+    Y = np.array(targets, ndmin=2)
+
+    predictions = [self.predict(x) for x in X]
+    scores = []
+    for prediction, target in zip(predictions, targets):
+      if np.argmax(prediction) == np.argmax(target):
+        scores.append(1)
+      else:
+        scores.append(0)
+
+    return np.array(scores).sum() / len(targets)
+
   def __initialize_weights(self):
     self.wih = np.random.normal(0, pow(self.inodes, -0.5), (self.hnodes, self.inodes))
     self.who = np.random.normal(0, pow(self.hnodes, -0.5), (self.onodes, self.hnodes))
